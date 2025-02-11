@@ -117,9 +117,55 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
-    
+    if(code==="1050"){ 
+        arr.push("signin success"); 
+        arr.push("y"); 
+    }
 
-    
+    if(code==="1051"){ 
+        arr.push("signin failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="1052"){ 
+        arr.push("Login Attempts Exceeded"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2000"){
+        arr.push("request access-token success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2001"){
+        arr.push("request access-token failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2002"){
+        arr.push("request access-token failed-refreshTokenError"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2010"){
+        arr.push("request access-token-check success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2011"){
+        arr.push("request access-token-check failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2020"){
+        arr.push("request logout success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2021"){
+        arr.push("request logout failed"); 
+        arr.push("n"); 
+    }
 
     return arr
 }
