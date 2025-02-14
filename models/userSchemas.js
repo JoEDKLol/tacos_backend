@@ -3,6 +3,10 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 const UserSchema = mongoose.Schema({
+    userseq : {
+        type: Number,
+        index:{unique:true}
+    },
     email : {
         type: String,
         required: true,
@@ -11,14 +15,7 @@ const UserSchema = mongoose.Schema({
     password : {
         type: String,
     },
-    restaurant_id : {
-        type: mongoose.Schema.ObjectId,
-        index:{unique:false}
-    },
-    restaurant_seq : {
-        type: Number,
-        index:{unique:false}
-    },
+
     loginattemptscnt : {
         type: Number,
         default: 0

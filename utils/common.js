@@ -167,6 +167,46 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2022"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2100"){
+        arr.push("search restaurants list success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2101"){
+        arr.push("search restaurants list failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2102"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2110"){
+        arr.push("restaurants new save success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2111"){
+        arr.push("restaurants new save failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2112"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    
+
+
+    
+
     return arr
 }
 

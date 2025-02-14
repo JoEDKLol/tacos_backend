@@ -11,6 +11,7 @@ let corspolicy = {
 }
 
 const userRouter = require('./routes/userRoute')
+const restaurantRoute = require('./routes/restaurantRoute')
 // const blogRouter = require('./routes/blogRoute')
 
 const path = require("path");
@@ -49,11 +50,12 @@ const db = module.exports = () => {
 db();
 
 app.use('/',userRouter);
+app.use('/res',restaurantRoute);
 // app.use('/blog',blogRouter);
 
-app.use((err, req, res, next) => {
-  res.status(500).send('Internal Server Error');
-});
+// app.use((err, req, res, next) => {
+//   res.status(500).send('Internal Server Error');
+// });
 
 app.listen(process.env.PORT,()=>{
   console.log(`Example app listening at http://localhost:${process.env.PORT}`)

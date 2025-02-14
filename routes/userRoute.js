@@ -3,9 +3,7 @@ const multer=require('multer')
 const userRoute=express.Router()
 let getFields=multer()
 const Users = require("../models/userSchemas");
-// const BlogInfos = require("../models/blogInfoSchemas");
 const EmailVerifications = require("../models/emailVerificationSchemas");
-const ObjectId = require("mongoose").Types.ObjectId;
 const commonModules = require("../utils/common");
 const jwtModules = require("../utils/jwtmodule");
 const { default: mongoose } = require('mongoose')
@@ -77,12 +75,13 @@ userRoute.post("/sendemail", getFields.none(), async (request, response) => {
             //startTransaction
             const session = await db.startSession();
             session.startTransaction();
-
+            const userseq = await sequence.getSequence("tacos_user_seq");
             const emailVObj = {
-                email:sendEmailAdrr,
-                verifynumber:verifyNum,
-                reguser:sendEmailAdrr,
-                upduser:sendEmailAdrr,
+              userseq:userseq,
+              email:sendEmailAdrr,
+              verifynumber:verifyNum,
+              reguser:sendEmailAdrr,
+              upduser:sendEmailAdrr,
             }
             await EmailVerifications.deleteMany({
               email:sendEmailAdrr
@@ -206,7 +205,7 @@ userRoute.post("/sendemailforpassword", getFields.none(), async (request, respon
     });
 
   } catch (error) {
-    let obj = commonModules.sendObjSet(error.message);
+    let obj = commonModules.sendObjSet(error.message); //code
     if(obj.code === ""){
       obj = commonModules.sendObjSet("1033");
     }
@@ -246,16 +245,14 @@ userRoute.post("/signin", getFields.none(), async (request, response) => {
   try {
     let sendObj = {};
     let userData = await Users.findOne({email:request.body.email});
-    console.log(userData);
+
     if(!userData){
         sendObj = commonModules.sendObjSet("1051");
     }
-    // sendObj = commonModules.sendObjSet("1051");
-
+    
     if(userData){
       //password compare
       let res = await userData.comparePassword(request.body.password);
-      console.log(res);
       
       if(!res){ //패스워드 인증 실패시 로그인 시도횟수가 10미만이면 시도횟수 증가
         if(userData.loginattemptscnt >= 10){
@@ -281,6 +278,7 @@ userRoute.post("/signin", getFields.none(), async (request, response) => {
           const userObj = {
               id:userData._id,
               email:userData.email,
+              userseq:userData.userseq
           }
           response.setHeader("refreshtoken", refreshtoken);
           sendObj = commonModules.sendObjSet("1050", userObj);
@@ -309,15 +307,26 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
       if(!userData){ //new user register
           let userEmail = request.body.email;
 
+          const session = await db.startSession();
+          session.startTransaction();
+
+          const userseq = await sequence.getSequence("tacos_user_seq");
           const userSaveObj = {
-            email:request.body.email,
-            password:request.body.password,
-            reguser:request.body.email,
-            upduser:request.body.email
+            userseq:userseq,
+            email:userEmail,
+            password:userEmail,
+            reguser:userEmail,
+            upduser:userEmail,
           }
 
           const newUsers =new Users(userSaveObj);
           let resusers=await newUsers.save();
+
+          // 4. commit
+          await session.commitTransaction();
+          // 5. end Transaction
+          session.endSession();
+
           
           const refreshtoken = jwtModules.retFreshToken(resusers._id, resusers.email);
           const userObj = {
@@ -332,14 +341,12 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
           const userObj = {
               id:userData._id,
               email:userData.email,
+              userseq:userData.userseq
               
           }
           response.setHeader("refreshtoken", refreshtoken);
           sendObj = commonModules.sendObjSet("1050", userObj);
       }
-
-      console.log(sendObj);
-
       response.status(200).send({
           sendObj
       });
@@ -360,8 +367,9 @@ userRoute.get("/getAccessToken", getFields.none(), async (request, response) => 
               let userData = await Users.findOne({email:refreshtoken.email});
               if(userData){
                   const userObj = {
-                      id:userData._id
-                      , email:userData.email
+                      id:userData._id, 
+                      email:userData.email, 
+                      userseq:userData.userseq
                   }
                   sendObj = commonModules.sendObjSet("2000", userObj);
                   const accesstoken = jwtModules.retAccessToken(userData._id, userData.email);
@@ -391,8 +399,9 @@ userRoute.post("/checkaccessToken", getFields.none(), async (request, response) 
               let userData = await Users.findOne({email:accessToken.email});
               if(userData){
                   const userObj = {
-                      id:userData._id
-                      , email:userData.email
+                      id:userData._id, 
+                      email:userData.email,
+                      userseq:userData.userseq
                   }
                   sendObj = commonModules.sendObjSet("2010", userObj);
                   
@@ -404,12 +413,10 @@ userRoute.post("/checkaccessToken", getFields.none(), async (request, response) 
           }
 
       }
-      // console.log("sendObj::", sendObj);
+
       response.send({sendObj});
 
   } catch (error) {
-      // console.log(error);
-      // response.status(500).send(error);
       response.status(500).send(commonModules.sendObjSet("2011", error));
   }
 });
@@ -419,8 +426,7 @@ userRoute.get("/logout", getFields.none(), async (request, response) => {
   let sendObj = {};
   try {
       const refreshToken = jwtModules.checkRefreshToken(request.cookies.refreshtoken);
-      // console.log(refreshToken);
-      // response.send({sendObj});
+
       if(refreshToken === false){
           sendObj = commonModules.sendObjSet("2021");
       }else{
@@ -431,9 +437,8 @@ userRoute.get("/logout", getFields.none(), async (request, response) => {
       response.send({sendObj});
 
   } catch (error) {
-      // console.log(error);
-      // response.status(500).send(error);
-      response.status(500).send(commonModules.sendObjSet("2021", error));
+
+      response.status(500).send(commonModules.sendObjSet("2022", error));
   }
 });
 
