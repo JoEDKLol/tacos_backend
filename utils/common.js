@@ -202,6 +202,66 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2113"){
+        arr.push("restaurants name duplication"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2114"){
+        arr.push("Number of registrations exceeded"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2130"){
+        arr.push("imgUpload success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2131"){
+        arr.push("imgUpload fail"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2132"){
+        arr.push("imgUpload imgbb fail"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2133"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2140"){
+        arr.push("restaurants update success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2141"){
+        arr.push("restaurants update failed"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2142"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2150"){
+        arr.push("restaurants delete success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2151"){
+        arr.push("restaurants delete failed"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2152"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
     
 
 
@@ -219,7 +279,6 @@ const getRandomNumber = (n) => {
     return retNum;
 
 }
-
 
 
 

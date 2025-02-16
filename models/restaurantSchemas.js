@@ -50,13 +50,30 @@ const RestaurantSchema = mongoose.Schema({
     type: Number,
   }, 
 
-  location : {
+  coordinate : {
     type: Object,
+  },
+  
+  address : {
+    type: String,
   }, 
 
   img : {
     type: String,
   }, 
+
+  thumbImg : {
+    type: String,
+  }, 
+
+  introduction : {
+    type: String,
+  }, 
+
+  deleteyn : {
+    type: String,
+    default: "n"
+  },
 
   regdate : {
     type: Date,
