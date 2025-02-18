@@ -44,14 +44,19 @@ const RestaurantSchema = mongoose.Schema({
 
   likeCounts : {
     type: Number,
+    default: 0
   }, 
 
   commentCounts : {
     type: Number,
+    default: 0
   }, 
 
   coordinate : {
     type: Object,
+    default: {
+      
+    }
   },
   
   address : {
@@ -68,6 +73,11 @@ const RestaurantSchema = mongoose.Schema({
 
   introduction : {
     type: String,
+  }, 
+
+  hashtags : {
+    type : Array, 
+    default: []
   }, 
 
   deleteyn : {

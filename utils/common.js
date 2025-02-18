@@ -1,5 +1,5 @@
 
-const mainBoardSPage = 12;
+const homePage = 2;
 const commentPage = 10;
 const replyPage = 5;
 
@@ -239,7 +239,7 @@ function returnCodeContents(code){
 
     if(code==="2141"){
         arr.push("restaurants update failed"); 
-        arr.push("y"); 
+        arr.push("n"); 
     }
 
     if(code==="2142"){
@@ -254,10 +254,40 @@ function returnCodeContents(code){
 
     if(code==="2151"){
         arr.push("restaurants delete failed"); 
-        arr.push("y"); 
+        arr.push("n"); 
     }
 
     if(code==="2152"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2160"){
+        arr.push("hashTagList search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2161"){
+        arr.push("hashTagList search failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2162"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2170"){
+        arr.push("searchreslisthome search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2171"){
+        arr.push("searchreslisthome search failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2172"){
         arr.push("Internal Server Error"); 
         arr.push("n"); 
     }
@@ -284,7 +314,7 @@ const getRandomNumber = (n) => {
 
 module.exports.sendObjSet = sendObjSet;
 module.exports.getRandomNumber = getRandomNumber;
-module.exports.mainBoardSPage = mainBoardSPage;
+module.exports.homePage = homePage;
 module.exports.commentPage = commentPage;
 module.exports.replyPage = replyPage;
 

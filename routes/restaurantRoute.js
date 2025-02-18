@@ -95,7 +95,7 @@ restaurantRoute.post("/restaurantnewsave", getFields.none(), async (request, res
       let restaurantDatas = await Restaurants.find(
         {userseq:request.body.userseq, deleteyn:"n"},
       );
-      if(restaurantDatas.length > 2){
+      if(restaurantDatas.length > 10){
         sendObj = commonModules.sendObjSet("2114");
       }else{
 
@@ -116,6 +116,7 @@ restaurantRoute.post("/restaurantnewsave", getFields.none(), async (request, res
             img:request.body.img, 
             thumbImg:request.body.thumbImg, 
             introduction:request.body.introduction, 
+            hashtags:request.body.hashtags,
             reguser:request.body.email,
             upduser:request.body.email,
           }
@@ -179,6 +180,7 @@ restaurantRoute.post("/restaurantupdate", getFields.none(), async (request, resp
           "img":request.body.img, 
           "thumbImg":request.body.thumbImg, 
           "introduction":request.body.introduction,
+          "hashtags":request.body.hashtags, 
           "upduser":request.body.user_email,
           "updDate":date,
         }
@@ -311,6 +313,113 @@ restaurantRoute.post("/restaurantdelete", getFields.none(), async (request, resp
 
     if(obj.code === ""){
       obj = commonModules.sendObjSet("2152");
+    }
+    response.status(500).send(obj); 
+  }
+});
+
+restaurantRoute.get("/searchhashtags", getFields.none(), async (request, response) => {
+  try {
+    let sendObj = {};
+  
+    let HashtagsList = await Hashtags.aggregate([
+      {$unwind: "$tagname"},
+      {$group: {
+        _id: "$tagname",
+        count: { $sum: 1 }
+      }}, 
+      {$sort: { count: -1 }}, 
+      { "$limit": 10 }
+    ]);
+
+    let hashTagArrRes = [];
+    for(let i=0; i<HashtagsList.length; i++){
+      hashTagArrRes.push(HashtagsList[i]._id);
+    }
+
+    sendObj = commonModules.sendObjSet("2160", hashTagArrRes);
+    
+    response.send({
+        sendObj
+    });
+
+  } catch (error) {
+    console.log(error);
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2162");
+    }
+    response.status(500).send(obj);
+  }
+});
+
+restaurantRoute.get("/searchreslisthome", getFields.none(), async (request, response) => {
+  try {
+    let sendObj = {};
+  
+    let hashTagList = request.query.hashTagList;
+    let keyword =  request.query.keyword; 
+
+    const currentPage = request.query.currentPage;
+    const pageListCnt = commonModules.homePage
+    const skipPage = pageListCnt*(currentPage-1);
+
+    let findCondition = { 
+      $and: [
+          {deleteyn:'n'},
+      ], 
+    };
+    
+    if(hashTagList != null && hashTagList != undefined && hashTagList != ""){
+      
+      let restaurantSeqListFromHashtages = await Hashtags.find(
+        { tagname : {
+          $in: hashTagList,
+        }}, 
+      );
+
+
+      let resArr = [];   
+      for(let i=0; i<restaurantSeqListFromHashtages.length; i++){
+        resArr.push(restaurantSeqListFromHashtages[i].restaurantseq);
+      }
+
+      findCondition.restaurantseq = {
+        $in: resArr,
+      }
+
+    }
+
+    const rgx = (pattern) => new RegExp(`.*${pattern}.*`, 'i');
+    const searchRgx = rgx(keyword);
+
+  
+    if(keyword != null && keyword != undefined && keyword != ""){
+      findCondition.$or=[
+        {restaurantname:{$regex:searchRgx}},
+      ]
+    }
+
+    let restaurantsDatas = await Restaurants.find(
+      findCondition
+    )
+    .sort({likeCounts:-1, regdate:-1})
+    .lean()
+    .skip(skipPage)
+    .limit(pageListCnt);
+
+    sendObj = commonModules.sendObjSet("2170", restaurantsDatas);
+    
+    response.send({
+        sendObj
+    });
+
+  } catch (error) {
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2172");
     }
     response.status(500).send(obj);
   }
