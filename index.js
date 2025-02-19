@@ -12,6 +12,7 @@ let corspolicy = {
 
 const userRouter = require('./routes/userRoute')
 const restaurantRoute = require('./routes/restaurantRoute')
+const managementRoute = require('./routes/managementRoute')
 // const blogRouter = require('./routes/blogRoute')
 
 const path = require("path");
@@ -51,6 +52,7 @@ db();
 
 app.use('/',userRouter);
 app.use('/res',restaurantRoute);
+app.use('/management',managementRoute);
 // app.use('/blog',blogRouter);
 
 // app.use((err, req, res, next) => {

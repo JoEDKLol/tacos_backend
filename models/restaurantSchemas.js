@@ -20,6 +20,7 @@ const RestaurantSchema = mongoose.Schema({
 
   header : {
     type: Object,
+    
   }, 
   
   home : {
@@ -28,6 +29,7 @@ const RestaurantSchema = mongoose.Schema({
 
   homecontent : {
     type: String,
+
   }, 
 
   about : {
@@ -53,10 +55,7 @@ const RestaurantSchema = mongoose.Schema({
   }, 
 
   coordinate : {
-    type: Object,
-    default: {
-      
-    }
+    type: String,
   },
   
   address : {

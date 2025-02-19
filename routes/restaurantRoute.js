@@ -181,8 +181,8 @@ restaurantRoute.post("/restaurantupdate", getFields.none(), async (request, resp
           "thumbImg":request.body.thumbImg, 
           "introduction":request.body.introduction,
           "hashtags":request.body.hashtags, 
-          "upduser":request.body.user_email,
-          "updDate":date,
+          "upduser":request.body.email,
+          "upddate":date,
         }
       );
 
@@ -296,8 +296,8 @@ restaurantRoute.post("/restaurantdelete", getFields.none(), async (request, resp
         {restaurantseq:request.body.restaurantseq},
         {
           "deleteyn":"y",
-          "upduser":request.body.user_email,
-          "updDate":date,
+          "upduser":request.body.email,
+          "upddate":date,
         }
       );
       sendObj = commonModules.sendObjSet("2150");
@@ -329,7 +329,7 @@ restaurantRoute.get("/searchhashtags", getFields.none(), async (request, respons
         count: { $sum: 1 }
       }}, 
       {$sort: { count: -1 }}, 
-      { "$limit": 10 }
+      { "$limit": 20 }
     ]);
 
     let hashTagArrRes = [];

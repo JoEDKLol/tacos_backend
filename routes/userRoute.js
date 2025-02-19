@@ -222,7 +222,7 @@ userRoute.post("/changepassword", getFields.none(), async (request, response) =>
         {  
             "password":request.body.password, 
             "loginAttemptsCnt":0,
-            "updDate":date,
+            "upddate":date,
             "updUser":request.body.email
         }
     )    

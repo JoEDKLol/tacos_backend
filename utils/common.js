@@ -1,5 +1,5 @@
 
-const homePage = 2;
+const homePage = 5;
 const commentPage = 10;
 const replyPage = 5;
 
@@ -288,6 +288,21 @@ function returnCodeContents(code){
     }
 
     if(code==="2172"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2180"){
+        arr.push("hearder layout save success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2181"){
+        arr.push("hearder layout save failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2182"){
         arr.push("Internal Server Error"); 
         arr.push("n"); 
     }
