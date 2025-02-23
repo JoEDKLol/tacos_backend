@@ -55,9 +55,10 @@ app.use('/res',restaurantRoute);
 app.use('/management',managementRoute);
 // app.use('/blog',blogRouter);
 
-// app.use((err, req, res, next) => {
-//   res.status(500).send('Internal Server Error');
-// });
+app.use((err, req, res, next) => {
+  console.log("index.js");
+  res.status(500).send('Internal Server Error');
+});
 
 app.listen(process.env.PORT,()=>{
   console.log(`Example app listening at http://localhost:${process.env.PORT}`)

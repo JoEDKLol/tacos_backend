@@ -307,8 +307,98 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
-    
+    if(code==="2190"){
+        arr.push("hearder layout search success"); 
+        arr.push("y"); 
+    }
 
+    if(code==="2191"){
+        arr.push("hearder layout search failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2192"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2200"){
+        arr.push("home layout save success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2201"){
+        arr.push("home layout save failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2202"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2210"){
+        arr.push("home layout search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2211"){
+        arr.push("home layout search failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2212"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2220"){
+        arr.push("restaurant layout search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2221"){
+        arr.push("restaurant layout search failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2222"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2230"){
+        arr.push("about layout save success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2231"){
+        arr.push("about layout save failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2232"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2240"){
+        arr.push("about layout search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2241"){
+        arr.push("about layout search failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2242"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    
+    
 
     
 

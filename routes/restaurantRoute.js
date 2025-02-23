@@ -117,6 +117,7 @@ restaurantRoute.post("/restaurantnewsave", getFields.none(), async (request, res
             thumbImg:request.body.thumbImg, 
             introduction:request.body.introduction, 
             hashtags:request.body.hashtags,
+            latLng : request.body.latLng, 
             reguser:request.body.email,
             upduser:request.body.email,
           }
@@ -181,6 +182,7 @@ restaurantRoute.post("/restaurantupdate", getFields.none(), async (request, resp
           "thumbImg":request.body.thumbImg, 
           "introduction":request.body.introduction,
           "hashtags":request.body.hashtags, 
+          "latLng" : request.body.latLng, 
           "upduser":request.body.email,
           "upddate":date,
         }
@@ -415,14 +417,43 @@ restaurantRoute.get("/searchreslisthome", getFields.none(), async (request, resp
         sendObj
     });
 
-  } catch (error) {
-    let obj = commonModules.sendObjSet(error.message); //code
+    } catch (error) {
+      let obj = commonModules.sendObjSet(error.message); //code
 
-    if(obj.code === ""){
-      obj = commonModules.sendObjSet("2172");
+      if(obj.code === ""){
+        obj = commonModules.sendObjSet("2172");
+      }
+      response.status(500).send(obj);
     }
-    response.status(500).send(obj);
-  }
-});
+  });
+
+restaurantRoute.get("/restaurantlayoutsearch", getFields.none(), async (request, response) => {
+
+  try {
+    let sendObj = {};
+
+    let restaurantDatas = await Restaurants.findOne(
+      {restaurantname:request.query.restaurantname,deleteyn:"n"},
+    );
+
+    if(restaurantDatas){
+      sendObj = commonModules.sendObjSet("2220", restaurantDatas);
+    }else{
+      sendObj = commonModules.sendObjSet("2221");
+    }
+
+    response.send({
+        sendObj
+    });
+
+    } catch (error) {
+      let obj = commonModules.sendObjSet(error.message); //code
+
+      if(obj.code === ""){
+        obj = commonModules.sendObjSet("2222");
+      }
+      response.status(500).send(obj);
+    }
+  });
 
 module.exports=restaurantRoute
