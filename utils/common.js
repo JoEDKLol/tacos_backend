@@ -1,6 +1,6 @@
 
 const homePage = 5;
-const commentPage = 10;
+const commentPage = 5;
 const replyPage = 5;
 
 function sendObjSet(code, resObj) {
@@ -393,6 +393,36 @@ function returnCodeContents(code){
     }
 
     if(code==="2242"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2250"){
+        arr.push("comment save success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2251"){
+        arr.push("comment save  failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2252"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2260"){
+        arr.push("comment search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2261"){
+        arr.push("comment search  failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2262"){
         arr.push("Internal Server Error"); 
         arr.push("n"); 
     }

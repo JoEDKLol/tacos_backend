@@ -4,6 +4,7 @@ const restaurantRoute=express.Router()
 let getFields=multer()
 const Users = require("../models/userSchemas");
 const Restaurants = require("../models/restaurantSchemas");
+const Comments = require("../models/commentSchemas");
 const Hashtags = require("../models/hashtagSchemas");
 const commonModules = require("../utils/common");
 const jwtModules = require("../utils/jwtmodule");
@@ -446,14 +447,103 @@ restaurantRoute.get("/restaurantlayoutsearch", getFields.none(), async (request,
         sendObj
     });
 
-    } catch (error) {
-      let obj = commonModules.sendObjSet(error.message); //code
+  } catch (error) {
+    let obj = commonModules.sendObjSet(error.message); //code
 
-      if(obj.code === ""){
-        obj = commonModules.sendObjSet("2222");
-      }
-      response.status(500).send(obj);
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2222");
     }
-  });
+    response.status(500).send(obj);
+  }
+});
+
+restaurantRoute.post("/commentsave", getFields.none(), async (request, response) => {
+
+  try {
+
+    let sendObj = {};
+    let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken);
+    if(!chechAuthRes){
+      sendObj = commonModules.sendObjSet("2011");
+    }
+
+    const commentseq = await sequence.getSequence("comment_seq");
+    const commentSaveObj = {
+      commentseq:commentseq,
+      restaurantseq :request.body.restaurantseq,
+      comment:request.body.comment,
+      userinfo:request.body.userid,
+      reguser:request.body.email,
+      upduser:request.body.email,
+    }
+    const newComments =new Comments(commentSaveObj);
+    let res=await newComments.save();
+    sendObj = commonModules.sendObjSet("2250");
+    response.send({
+        sendObj
+    });
+
+  } catch (error) {
+
+    console.log(error);
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2252");
+    }
+    response.status(500).send(obj);
+  }
+});
+
+restaurantRoute.get("/commentsearch", getFields.none(), async (request, response) => {
+
+  try {
+    let sendObj = {};
+
+    const currentSeq = Number(request.query.currentCommentSeq);
+    const searchListCnt = commonModules.commentPage;
+    const restaurantseq = Number(request.query.restaurantseq);
+
+    
+    const queryStr = {
+      restaurantseq:restaurantseq,
+    }
+
+    if(currentSeq > 0){
+      queryStr.commentseq = {"$lt":currentSeq}
+    }
+
+    let commentsRes = await Comments.find(
+        queryStr
+    )
+    .sort({regdate:-1})
+    .lean()
+    .limit(searchListCnt).populate('userinfo', { _id:0, email:1}).exec();
+    
+    const resObj = {
+      comments : commentsRes,
+    }
+
+    if(commentsRes.length > 0){
+      resObj.lastCommentSeq = commentsRes[commentsRes.length-1].commentseq
+    }
+
+    sendObj = commonModules.sendObjSet("2260", resObj);
+
+    response.send({
+        sendObj
+    });
+
+  } catch (error) {
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2262");
+    }
+    response.status(500).send(obj);
+  }
+});
+
+
 
 module.exports=restaurantRoute
