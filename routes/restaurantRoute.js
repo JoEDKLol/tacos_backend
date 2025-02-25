@@ -209,7 +209,6 @@ restaurantRoute.post("/restaurantupdate", getFields.none(), async (request, resp
     });
 
   } catch (error) {
-    console.log(error);
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -311,7 +310,6 @@ restaurantRoute.post("/restaurantdelete", getFields.none(), async (request, resp
     });
 
   } catch (error) {
-    console.log(error);
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -477,8 +475,34 @@ restaurantRoute.post("/commentsave", getFields.none(), async (request, response)
       upduser:request.body.email,
     }
     const newComments =new Comments(commentSaveObj);
+
+    const session = await db.startSession();
+    session.startTransaction();
+
     let res=await newComments.save();
-    sendObj = commonModules.sendObjSet("2250");
+    let searchComment = await Comments.findOne(
+      {commentseq:res.commentseq}
+    ).populate('userinfo', { _id:1, email:1}).exec();
+
+    let restaurantUpdateDatas = await Restaurants.updateOne(
+      {restaurantseq :request.body.restaurantseq, deleteyn:"n"},
+      { $inc: { "commentCounts": 1 } }
+    );
+
+    let restaurantDatas = await Restaurants.findOne(
+      {restaurantseq :request.body.restaurantseq},
+      {_id:0, "commentCounts":1}
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    const resObj = {
+      saveComment : searchComment,
+      commentCounts : restaurantDatas.commentCounts
+    }
+
+    sendObj = commonModules.sendObjSet("2250" ,resObj);
     response.send({
         sendObj
     });
@@ -500,7 +524,7 @@ restaurantRoute.get("/commentsearch", getFields.none(), async (request, response
   try {
     let sendObj = {};
 
-    const currentSeq = Number(request.query.currentCommentSeq);
+    const currentSeq = Number(request.query.currentSeq);
     const searchListCnt = commonModules.commentPage;
     const restaurantseq = Number(request.query.restaurantseq);
 
@@ -518,7 +542,7 @@ restaurantRoute.get("/commentsearch", getFields.none(), async (request, response
     )
     .sort({regdate:-1})
     .lean()
-    .limit(searchListCnt).populate('userinfo', { _id:0, email:1}).exec();
+    .limit(searchListCnt).populate('userinfo', { _id:1, email:1}).exec();
     
     const resObj = {
       comments : commentsRes,
@@ -539,6 +563,95 @@ restaurantRoute.get("/commentsearch", getFields.none(), async (request, response
 
     if(obj.code === ""){
       obj = commonModules.sendObjSet("2262");
+    }
+    response.status(500).send(obj);
+  }
+});
+
+restaurantRoute.post("/commentupdate", getFields.none(), async (request, response) => {
+  try {
+    let sendObj = {};
+    let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken);
+    if(!chechAuthRes){
+      sendObj = commonModules.sendObjSet("2011");
+    }else{
+
+      let date = new Date().toISOString();
+
+      let updateComments=await Comments.updateOne(
+        {
+          restaurantseq:request.body.restaurantseq, 
+          commentseq:request.body.commentseq
+        },
+        {
+          "comment":request.body.comment,
+          "upduser":request.body.email,
+          "upddate":date,
+        }
+      );
+
+      sendObj = commonModules.sendObjSet("2270");
+    }
+    
+    response.send({
+        sendObj
+    });
+
+  } catch (error) {
+    console.log(error);
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2272");
+    }
+    response.status(500).send(obj);
+  }
+});
+
+restaurantRoute.post("/commentdelete", getFields.none(), async (request, response) => {
+  try {
+    let sendObj = {};
+    let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken);
+    if(!chechAuthRes){
+      sendObj = commonModules.sendObjSet("2011");
+    }else{
+
+      const session = await db.startSession();
+      session.startTransaction();
+
+      let deleteComments=await Comments.deleteOne({
+        restaurantseq:request.body.restaurantseq, 
+        commentseq:request.body.commentseq
+      });
+
+      let restaurantUpdateDatas = await Restaurants.updateOne(
+        {restaurantseq :request.body.restaurantseq, deleteyn:"n"},
+        { $inc: { "commentCounts": -1 } }
+      );
+
+      let restaurantDatas = await Restaurants.findOne(
+        {restaurantseq :request.body.restaurantseq},
+        {_id:0, "commentCounts":1}
+      );
+
+      // 4. commit
+      await session.commitTransaction();
+      // 5. end Transaction
+      session.endSession();
+
+      sendObj = commonModules.sendObjSet("2280", restaurantDatas);
+    }
+    
+    response.send({
+        sendObj
+    });
+
+  } catch (error) {
+    console.log(error);
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2282");
     }
     response.status(500).send(obj);
   }

@@ -427,6 +427,36 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2270"){
+        arr.push("comment update success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2271"){
+        arr.push("comment update  failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2272"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2280"){
+        arr.push("comment update success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2281"){
+        arr.push("comment update  failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2282"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
     
     
 
