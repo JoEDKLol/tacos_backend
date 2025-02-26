@@ -10,6 +10,7 @@ const { default: mongoose } = require('mongoose')
 const db = mongoose.connection;
 const sequence = require("../utils/sequences");
 const { sendEmail } = require('../utils/sendMail');
+const RestaurantLikes = require("../models/restaurantLikeSchemas");
 
 
 userRoute.post("/signup", getFields.none(), async (request, response) => {
@@ -245,6 +246,7 @@ userRoute.post("/signin", getFields.none(), async (request, response) => {
   try {
     let sendObj = {};
     let userData = await Users.findOne({email:request.body.email});
+    const resLikeArr = await RestaurantLikes.find({userseq:userData.userseq});
 
     if(!userData){
         sendObj = commonModules.sendObjSet("1051");
@@ -274,11 +276,15 @@ userRoute.post("/signin", getFields.none(), async (request, response) => {
             let upRes = await Users.updateOne({_id:userData._id}
             ,{"loginattemptscnt":0})
           }
+
+         
+
           const refreshtoken = jwtModules.retFreshToken(userData._id, userData.email);
           const userObj = {
               id:userData._id,
               email:userData.email,
-              userseq:userData.userseq
+              userseq:userData.userseq, 
+              likesArr : resLikeArr
           }
           response.setHeader("refreshtoken", refreshtoken);
           sendObj = commonModules.sendObjSet("1050", userObj);
@@ -303,49 +309,53 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
       let sendObj = {};
       
       let userData = await Users.findOne({email:request.body.email});
-      
+      const resLikeArr = RestaurantLikes.find({userseq:userData.userseq});
+
       if(!userData){ //new user register
-          let userEmail = request.body.email;
+        let userEmail = request.body.email;
 
-          const session = await db.startSession();
-          session.startTransaction();
+        const session = await db.startSession();
+        session.startTransaction();
 
-          const userseq = await sequence.getSequence("tacos_user_seq");
-          const userSaveObj = {
-            userseq:userseq,
-            email:userEmail,
-            password:userEmail,
-            reguser:userEmail,
-            upduser:userEmail,
-          }
+        const userseq = await sequence.getSequence("tacos_user_seq");
+        const userSaveObj = {
+          userseq:userseq,
+          email:userEmail,
+          password:userEmail,
+          reguser:userEmail,
+          upduser:userEmail,
+        }
 
-          const newUsers =new Users(userSaveObj);
-          let resusers=await newUsers.save();
+        const newUsers =new Users(userSaveObj);
+        let resusers=await newUsers.save();
 
-          // 4. commit
-          await session.commitTransaction();
-          // 5. end Transaction
-          session.endSession();
+        // 4. commit
+        await session.commitTransaction();
+        // 5. end Transaction
+        session.endSession();
 
-          
-          const refreshtoken = jwtModules.retFreshToken(resusers._id, resusers.email);
-          const userObj = {
-              id:resusers._id,
-              email:resusers.email,
-          }
-          response.setHeader("refreshtoken", refreshtoken);
-          sendObj = commonModules.sendObjSet("1050", userObj);
+        
+        const refreshtoken = jwtModules.retFreshToken(resusers._id, resusers.email);
+        const userObj = {
+            id:resusers._id,
+            email:resusers.email,
+            userseq:userData.userseq, 
+            likesArr : resLikeArr
+        }
+        response.setHeader("refreshtoken", refreshtoken);
+        sendObj = commonModules.sendObjSet("1050", userObj);
           
       }else{
-          const refreshtoken = jwtModules.retFreshToken(userData._id, userData.email);
-          const userObj = {
-              id:userData._id,
-              email:userData.email,
-              userseq:userData.userseq
-              
-          }
-          response.setHeader("refreshtoken", refreshtoken);
-          sendObj = commonModules.sendObjSet("1050", userObj);
+
+        const refreshtoken = jwtModules.retFreshToken(userData._id, userData.email);
+        const userObj = {
+            id:userData._id,
+            email:userData.email,
+            userseq:userData.userseq, 
+            likesArr : resLikeArr
+        }
+        response.setHeader("refreshtoken", refreshtoken);
+        sendObj = commonModules.sendObjSet("1050", userObj);
       }
       response.status(200).send({
           sendObj
@@ -365,11 +375,13 @@ userRoute.get("/getAccessToken", getFields.none(), async (request, response) => 
           const refreshtoken = jwtModules.checkRefreshToken(request.cookies.refreshtoken);
           if(refreshtoken){
               let userData = await Users.findOne({email:refreshtoken.email});
+              const resLikeArr = await RestaurantLikes.find({userseq:userData.userseq});
               if(userData){
                   const userObj = {
-                      id:userData._id, 
-                      email:userData.email, 
-                      userseq:userData.userseq
+                    id:userData._id, 
+                    email:userData.email, 
+                    userseq:userData.userseq,
+                    likesArr : resLikeArr
                   }
                   sendObj = commonModules.sendObjSet("2000", userObj);
                   const accesstoken = jwtModules.retAccessToken(userData._id, userData.email);
@@ -397,11 +409,13 @@ userRoute.post("/checkaccessToken", getFields.none(), async (request, response) 
           // console.log("accessToken::", accessToken);
           if(accessToken){
               let userData = await Users.findOne({email:accessToken.email});
+              const resLikeArr = await RestaurantLikes.find({userseq:userData.userseq});
               if(userData){
                   const userObj = {
-                      id:userData._id, 
-                      email:userData.email,
-                      userseq:userData.userseq
+                    id:userData._id, 
+                    email:userData.email,
+                    userseq:userData.userseq,
+                    likesArr : resLikeArr
                   }
                   sendObj = commonModules.sendObjSet("2010", userObj);
                   

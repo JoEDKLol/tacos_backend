@@ -457,6 +457,36 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2290"){
+        arr.push("restaurant like update success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2291"){
+        arr.push("restaurant like update failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2292"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2300"){
+        arr.push("restaurant like search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2301"){
+        arr.push("restaurant like search failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2302"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
     
     
 

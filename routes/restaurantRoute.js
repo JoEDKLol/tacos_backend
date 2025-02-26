@@ -15,6 +15,7 @@ const checkAuth = require('../utils/checkAuth');
 const { uploadMiddleware } = require('../utils/imgUpload');
 const imgbbUploader = require('imgbb-uploader');
 const fs = require('fs');
+const RestaurantLikes = require('../models/restaurantLikeSchemas');
 
 restaurantRoute.get("/searchreslist", getFields.none(), async (request, response) => {
   try {
@@ -474,10 +475,13 @@ restaurantRoute.post("/commentsave", getFields.none(), async (request, response)
       reguser:request.body.email,
       upduser:request.body.email,
     }
-    const newComments =new Comments(commentSaveObj);
 
     const session = await db.startSession();
     session.startTransaction();
+    
+    const newComments =new Comments(commentSaveObj);
+
+    
 
     let res=await newComments.save();
     let searchComment = await Comments.findOne(
@@ -634,9 +638,7 @@ restaurantRoute.post("/commentdelete", getFields.none(), async (request, respons
         {_id:0, "commentCounts":1}
       );
 
-      // 4. commit
       await session.commitTransaction();
-      // 5. end Transaction
       session.endSession();
 
       sendObj = commonModules.sendObjSet("2280", restaurantDatas);
@@ -657,6 +659,125 @@ restaurantRoute.post("/commentdelete", getFields.none(), async (request, respons
   }
 });
 
+
+restaurantRoute.post("/likeupdate", getFields.none(), async (request, response) => {
+  try {
+    let sendObj = {};
+    let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken);
+    if(!chechAuthRes){
+      sendObj = commonModules.sendObjSet("2011");
+    }else{
+      const session = await db.startSession();
+      session.startTransaction();
+
+      const resLikeArr = await RestaurantLikes.findOne(
+        {
+          userseq:request.body.userseq, 
+          restaurantseq:request.body.restaurantseq
+        }
+      );
+
+      if(resLikeArr){ //update
+        console.log("update");
+        let date = new Date().toISOString();
+        let updateComments=await RestaurantLikes.updateOne(
+          {
+            userseq:request.body.userseq, 
+            restaurantseq:request.body.restaurantseq
+          },
+          {
+            "likeyn":request.body.likeyn,
+            "upduser":request.body.email,
+            "upddate":date,
+          }
+        );
+      }else{
+        const restaurantLikeSaveObj = {
+          userseq:request.body.userseq, 
+          restaurantseq:request.body.restaurantseq,
+          likeyn:request.body.likeyn,
+          restaurantinfo:request.body.restaurantinfo,
+          reguser:request.body.email,
+          upduser:request.body.email,
+        }
+        const newRestaurantLikes =new RestaurantLikes(restaurantLikeSaveObj);
+        await newRestaurantLikes.save();
+      }
+
+      let likeCnt = 0;
+      if(request.body.likeyn === "y"){
+        likeCnt = 1;
+      }else{
+        likeCnt = -1;
+      }
+
+      let restaurantUpdateDatas = await Restaurants.updateOne(
+        {restaurantseq :request.body.restaurantseq, deleteyn:"n"},
+        { $inc: { "likeCounts": likeCnt } }
+      );
+  
+      let restaurantDatas = await Restaurants.findOne(
+        {restaurantseq :request.body.restaurantseq},
+        {_id:0, "likeCounts":1}
+      );
+
+      const resObj = {
+        likeCounts : restaurantDatas.likeCounts, 
+        userLike:request.body.likeyn
+      }
+
+      await session.commitTransaction();
+      session.endSession();
+      
+      sendObj = commonModules.sendObjSet("2290", resObj);
+    }
+    
+    response.send({
+        sendObj
+    });
+
+  } catch (error) {
+    console.log(error);
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2292");
+    }
+    response.status(500).send(obj);
+  }
+});
+
+restaurantRoute.get("/likesearch", getFields.none(), async (request, response) => {
+  try {
+    let sendObj = {};
+    let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken);
+    if(!chechAuthRes){
+      sendObj = commonModules.sendObjSet("2011");
+    }else{
+      const session = await db.startSession();
+      session.startTransaction();
+
+      const resLikeArr = await RestaurantLikes.find(
+        {
+          userseq:request.query.userseq
+        }
+      );      
+      sendObj = commonModules.sendObjSet("2300", resLikeArr);
+    }
+    
+    response.send({
+        sendObj
+    });
+
+  } catch (error) {
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2302");
+    }
+    response.status(500).send(obj);
+  }
+});
 
 
 module.exports=restaurantRoute
