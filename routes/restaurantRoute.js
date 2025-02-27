@@ -472,6 +472,7 @@ restaurantRoute.post("/commentsave", getFields.none(), async (request, response)
       restaurantseq :request.body.restaurantseq,
       comment:request.body.comment,
       userinfo:request.body.userid,
+      restaurantinfo:request.body.restaurantId, 
       reguser:request.body.email,
       upduser:request.body.email,
     }
@@ -486,7 +487,7 @@ restaurantRoute.post("/commentsave", getFields.none(), async (request, response)
     let res=await newComments.save();
     let searchComment = await Comments.findOne(
       {commentseq:res.commentseq}
-    ).populate('userinfo', { _id:1, email:1}).exec();
+    ).populate('userinfo', { _id:1, email:1, username:1, userimg:1, userthumbImg:1}).exec();
 
     let restaurantUpdateDatas = await Restaurants.updateOne(
       {restaurantseq :request.body.restaurantseq, deleteyn:"n"},
@@ -546,7 +547,7 @@ restaurantRoute.get("/commentsearch", getFields.none(), async (request, response
     )
     .sort({regdate:-1})
     .lean()
-    .limit(searchListCnt).populate('userinfo', { _id:1, email:1}).exec();
+    .limit(searchListCnt).populate('userinfo', { _id:1, email:1, username:1, userimg:1, userthumbImg:1}).exec();
     
     const resObj = {
       comments : commentsRes,

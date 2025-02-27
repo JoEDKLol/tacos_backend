@@ -487,6 +487,36 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2310"){
+        arr.push("user update success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2311"){
+        arr.push("user update failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2312"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2320"){
+        arr.push("user search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2321"){
+        arr.push("user search failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2322"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
     
     
 

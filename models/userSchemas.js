@@ -16,6 +16,18 @@ const UserSchema = mongoose.Schema({
         type: String,
     },
 
+    username : {
+        type: String,
+    }, 
+    
+    userimg : {
+        type: String,
+    }, 
+    
+    userthumbImg : {
+        type: String,
+    }, 
+
     loginattemptscnt : {
         type: Number,
         default: 0

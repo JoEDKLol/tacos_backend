@@ -20,6 +20,18 @@ const commentSchemas = mongoose.Schema({
         required: true,
         ref: "user", 
     },
+
+    userinfo: {
+        type: mongoose.Schema.Types.ObjectId, 
+        required: true,
+        ref: "user", 
+    },
+
+    restaurantinfo: {
+        type: mongoose.Schema.Types.ObjectId, 
+        required: true,
+        ref: "Restaurant", 
+    },
     
     deleteyn : {
         type: String,

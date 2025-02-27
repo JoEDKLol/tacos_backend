@@ -11,7 +11,7 @@ const db = mongoose.connection;
 const sequence = require("../utils/sequences");
 const { sendEmail } = require('../utils/sendMail');
 const RestaurantLikes = require("../models/restaurantLikeSchemas");
-
+const checkAuth = require('../utils/checkAuth');
 
 userRoute.post("/signup", getFields.none(), async (request, response) => {
   try {
@@ -455,5 +455,87 @@ userRoute.get("/logout", getFields.none(), async (request, response) => {
       response.status(500).send(commonModules.sendObjSet("2022", error));
   }
 });
+
+
+userRoute.post("/userupdate", getFields.none(), async (request, response) => {
+  try {
+    let sendObj = {};
+    let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken);
+    if(!chechAuthRes){
+      sendObj = commonModules.sendObjSet("2011");
+    }else{
+
+      let date = new Date().toISOString();
+
+      let updateUsers=await Users.updateOne(
+        {
+          userseq:request.body.userseq, 
+        },
+        {
+          "username":request.body.username,
+          "userimg":request.body.userimg,
+          "userthumbImg":request.body.userthumbImg,
+          "upduser":request.body.email,
+          "upddate":date,
+        }
+      );
+
+      sendObj = commonModules.sendObjSet("2310");
+    }
+    
+    response.send({
+        sendObj
+    });
+
+  } catch (error) {
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2312");
+    }
+    response.status(500).send(obj);
+  }
+});
+
+userRoute.get("/searchuser", getFields.none(), async (request, response) => {
+  try {
+    let sendObj = {};
+    let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken);
+    if(!chechAuthRes){
+      sendObj = commonModules.sendObjSet("2011");
+    }else{
+
+      let searchUser=await Users.findOne(
+        {
+          userseq:request.query.userseq, 
+        },
+        {
+          _id:0,
+          "username":1,
+          "userimg":1,
+          "userthumbImg":1,
+        }
+      );
+
+      sendObj = commonModules.sendObjSet("2320", searchUser);
+    }
+    
+    response.send({
+        sendObj
+    });
+
+  } catch (error) {
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2322");
+    }
+    response.status(500).send(obj);
+  }
+});
+
+
+
+
 
 module.exports=userRoute
