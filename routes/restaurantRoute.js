@@ -603,7 +603,7 @@ restaurantRoute.post("/commentupdate", getFields.none(), async (request, respons
     });
 
   } catch (error) {
-    console.log(error);
+    
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -693,7 +693,9 @@ restaurantRoute.post("/likeupdate", getFields.none(), async (request, response) 
           }
         );
       }else{
+        const restaurantlikeseq = await sequence.getSequence("restaurantlike_seq");
         const restaurantLikeSaveObj = {
+          restaurantlikeseq:restaurantlikeseq,
           userseq:request.body.userseq, 
           restaurantseq:request.body.restaurantseq,
           likeyn:request.body.likeyn,

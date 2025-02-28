@@ -517,6 +517,21 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2330"){
+        arr.push("comment next search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2331"){
+        arr.push("comment next failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2332"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
     
     
 

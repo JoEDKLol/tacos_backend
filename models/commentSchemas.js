@@ -19,12 +19,7 @@ const commentSchemas = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         required: true,
         ref: "user", 
-    },
-
-    userinfo: {
-        type: mongoose.Schema.Types.ObjectId, 
-        required: true,
-        ref: "user", 
+        index:true
     },
 
     restaurantinfo: {

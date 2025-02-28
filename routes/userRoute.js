@@ -12,6 +12,7 @@ const sequence = require("../utils/sequences");
 const { sendEmail } = require('../utils/sendMail');
 const RestaurantLikes = require("../models/restaurantLikeSchemas");
 const checkAuth = require('../utils/checkAuth');
+const Comments = require("../models/commentSchemas");
 
 userRoute.post("/signup", getFields.none(), async (request, response) => {
   try {
@@ -504,22 +505,140 @@ userRoute.get("/searchuser", getFields.none(), async (request, response) => {
     if(!chechAuthRes){
       sendObj = commonModules.sendObjSet("2011");
     }else{
-
-      let searchUser=await Users.findOne(
+      const searchListCnt = commonModules.commentPage;
+      const searchUser=await Users.findOne(
         {
           userseq:request.query.userseq, 
         },
         {
-          _id:0,
+          _id:1,
           "username":1,
           "userimg":1,
           "userthumbImg":1,
         }
       );
 
-      sendObj = commonModules.sendObjSet("2320", searchUser);
+      const searchComment = await Comments.find(
+        {userinfo:searchUser._id}
+      ).sort({commentseq:-1})
+      .limit(searchListCnt)
+      .populate('restaurantinfo', { 
+        _id:0, 
+        restaurantname:1, 
+        address : 1, 
+        img:1, 
+        thumbImg:1, 
+        introduction : 1, 
+        hashtags : 1, 
+        latLng : 1, 
+        deleteyn : 1
+      }).exec();
+
+      const commentCnt = await Comments.find(
+        {userinfo:searchUser._id}
+      ).countDocuments();
+
+      // const commentCnt = searchComment.count();
+
+      const searchLike = await RestaurantLikes.find(
+        {userseq:request.query.userseq, likeyn:"y"}
+      ).sort({regdate:-1})
+      .limit(searchListCnt)
+      .populate('restaurantinfo', { 
+        _id:0, 
+        restaurantname:1, 
+        address : 1, 
+        img:1, 
+        thumbImg:1, 
+        introduction : 1, 
+        hashtags : 1, 
+        latLng : 1
+      }).exec();
+
+      const likeCnt = await RestaurantLikes.find(
+        {userseq:request.query.userseq, likeyn:"y"}
+      ).countDocuments();
+      // const likeCnt = searchLike.count();
+
+      const resObj = {
+        searchUser:searchUser,
+        searchComment:searchComment,
+        searchLike:searchLike
+      }
+
+      if(searchComment.length > 0){
+        resObj.lastCommentSeq = searchComment[searchComment.length-1].commentseq
+      }else{
+        resObj.lastCommentSeq = 0;
+      }
+
+      if(searchLike.length > 0){
+        resObj.lastLikeSeq = searchLike[searchLike.length-1].restaurantlikeseq
+      }else{
+        resObj.lastLikeSeq = 0;
+      }
+
+      resObj.commentsCnt = commentCnt;
+      resObj.likesCnt = likeCnt;
+
+
+      sendObj = commonModules.sendObjSet("2320", resObj);
     }
-    
+
+    response.send({
+        sendObj
+    });
+
+  } catch (error) {
+    console.log(error);
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2322");
+    }
+    response.status(500).send(obj);
+  }
+});
+
+userRoute.get("/searchnextcomment", getFields.none(), async (request, response) => {
+  try {
+    let sendObj = {};
+    let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken);
+    if(!chechAuthRes){
+      sendObj = commonModules.sendObjSet("2011");
+    }else{
+      const searchListCnt = commonModules.commentPage;
+      const currentSeq = Number(request.query.currentSeq);
+      const userid = request.query.userid;
+
+
+      const searchComment = await Comments.find(
+        {userinfo:userid, commentseq : {"$lt":currentSeq}}
+      ).sort({commentseq:-1})
+      .limit(searchListCnt)
+      .populate('restaurantinfo', { 
+        _id:0, 
+        restaurantname:1, 
+        address : 1, 
+        img:1, 
+        thumbImg:1, 
+        introduction : 1, 
+        hashtags : 1, 
+        latLng : 1, 
+        deleteyn : 1
+      }).exec();
+
+      const resObj = {
+        comments:searchComment,
+      }
+
+      if(searchComment.length > 0){
+        resObj.lastCommentSeq = searchComment[searchComment.length-1].commentseq
+      }
+
+      sendObj = commonModules.sendObjSet("2330", resObj);
+    }
+
     response.send({
         sendObj
     });
@@ -528,7 +647,58 @@ userRoute.get("/searchuser", getFields.none(), async (request, response) => {
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
-      obj = commonModules.sendObjSet("2322");
+      obj = commonModules.sendObjSet("2332");
+    }
+    response.status(500).send(obj);
+  }
+});
+
+userRoute.get("/searchnextlike", getFields.none(), async (request, response) => {
+  try {
+    let sendObj = {};
+    let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken);
+    if(!chechAuthRes){
+      sendObj = commonModules.sendObjSet("2011");
+    }else{
+      const searchListCnt = commonModules.commentPage;
+      const currentSeq = Number(request.query.currentSeq);
+      const userseq = request.query.userseq;
+
+      const searchLike = await RestaurantLikes.find(
+        {userseq:userseq, likeyn:"y", restaurantlikeseq : {"$lt":currentSeq}}
+      ).sort({commentseq:-1})
+      .limit(searchListCnt)
+      .populate('restaurantinfo', { 
+        _id:0, 
+        restaurantname:1, 
+        address : 1, 
+        img:1, 
+        thumbImg:1, 
+        introduction : 1, 
+        hashtags : 1, 
+        latLng : 1, 
+        deleteyn : 1
+      }).exec();
+
+      const resObj = {
+        likes:searchLike,
+      }
+
+      if(searchLike.length > 0){
+        resObj.lastLikeSeq = searchLike[searchLike.length-1].restaurantlikeseq
+      }
+
+      sendObj = commonModules.sendObjSet("2330", resObj);
+    }
+
+    response.send({
+        sendObj
+    });
+
+  } catch (error) {
+    let obj = commonModules.sendObjSet(error.message); //code
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2332");
     }
     response.status(500).send(obj);
   }

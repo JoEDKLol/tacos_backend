@@ -2,6 +2,11 @@ const mongoose = require('mongoose')
 
 const restaurantLikeSchemas = mongoose.Schema({
 
+    restaurantlikeseq : {
+      type: Number,
+      index:{unique:false}
+    },
+
     userseq : {
       type: Number,
       index:{unique:false}
