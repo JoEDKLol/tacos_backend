@@ -532,6 +532,80 @@ function returnCodeContents(code){
         arr.push("n"); 
     }
 
+    if(code==="2340"){
+        arr.push("menu layout search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2341"){
+        arr.push("menu layout search failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2342"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2350"){
+        arr.push("menu layout save success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2351"){
+        arr.push("menu layout save failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2352"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2360"){
+        arr.push("category save success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2361"){
+        arr.push("category save failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2362"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2370"){
+        arr.push("category search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2371"){
+        arr.push("category search failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2372"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2380"){
+        arr.push("category update success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2381"){
+        arr.push("category update failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2382"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
     
     
 
