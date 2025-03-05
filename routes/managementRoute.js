@@ -479,5 +479,38 @@ managementRoute.post("/categoryupdate", getFields.none(), async (request, respon
   }
 });
 
+managementRoute.post("/categorydelete", getFields.none(), async (request, response) => {
+
+  try {
+    let sendObj = {};
+    let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken);
+    
+    if(!chechAuthRes){
+      sendObj = commonModules.sendObjSet("2011");
+    }else{
+      let categoriesDatas = await Categories.deleteOne(
+        {
+          _id:request.body._id, 
+        }
+      )
+
+      sendObj = commonModules.sendObjSet("2390");
+      
+    }
+    
+    response.send({
+        sendObj
+    });
+
+  } catch (error) {
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2392");
+    }
+    response.status(500).send(obj);
+  }
+});
+
 
 module.exports=managementRoute

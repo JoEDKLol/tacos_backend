@@ -606,6 +606,21 @@ function returnCodeContents(code){
         arr.push("Internal Server Error"); 
         arr.push("n"); 
     }
+
+    if(code==="2390"){
+        arr.push("category delete success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2391"){
+        arr.push("category delete failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2392"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
     
     
 
