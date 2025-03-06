@@ -621,6 +621,51 @@ function returnCodeContents(code){
         arr.push("Internal Server Error"); 
         arr.push("n"); 
     }
+
+    if(code==="2400"){
+        arr.push("menu save success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2401"){
+        arr.push("menu save failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2402"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2410"){
+        arr.push("menu search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2411"){
+        arr.push("menu search failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2412"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2420"){
+        arr.push("menu update success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2421"){
+        arr.push("menu update failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2422"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
     
     
 

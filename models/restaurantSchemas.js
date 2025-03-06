@@ -44,6 +44,10 @@ const RestaurantSchema = mongoose.Schema({
     type: Object,
   }, 
 
+  menuea : {
+    type: Object,
+  }, 
+
   likeCounts : {
     type: Number,
     default: 0
