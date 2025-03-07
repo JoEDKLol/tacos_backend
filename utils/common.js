@@ -666,6 +666,21 @@ function returnCodeContents(code){
         arr.push("Internal Server Error"); 
         arr.push("n"); 
     }
+
+    if(code==="2430"){
+        arr.push("category search success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2431"){
+        arr.push("category search failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2432"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
     
     
 

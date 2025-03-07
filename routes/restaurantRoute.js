@@ -2,10 +2,11 @@ const express=require('express')
 const multer=require('multer')
 const restaurantRoute=express.Router()
 let getFields=multer()
-const Users = require("../models/userSchemas");
 const Restaurants = require("../models/restaurantSchemas");
 const Comments = require("../models/commentSchemas");
+const Categories = require("../models/categorySchema");
 const Hashtags = require("../models/hashtagSchemas");
+const Menus = require("../models/menuSchema");
 const commonModules = require("../utils/common");
 const jwtModules = require("../utils/jwtmodule");
 const { default: mongoose } = require('mongoose')
@@ -456,6 +457,41 @@ restaurantRoute.get("/restaurantlayoutsearch", getFields.none(), async (request,
   }
 });
 
+restaurantRoute.get("/categorysearch", getFields.none(), async (request, response) => {
+
+  try {
+    let sendObj = {};
+    let restaurantDatas = await Restaurants.findOne(
+      {restaurantname:request.query.restaurantname,deleteyn:"n"},
+    );
+
+    if(restaurantDatas){
+      let categoriesDatas = await Categories.find(
+        {restaurantseq:restaurantDatas.restaurantseq,},
+      ).sort({order:1});
+      
+      sendObj = commonModules.sendObjSet("2430", categoriesDatas);
+    }else{
+      sendObj = commonModules.sendObjSet("2431"); 
+    }
+    
+    
+    response.send({
+        sendObj
+    });
+
+  } catch (error) {
+    console.log(error);
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2432");
+    }
+    response.status(500).send(obj);
+  }
+});
+
+
 restaurantRoute.post("/commentsave", getFields.none(), async (request, response) => {
 
   try {
@@ -679,7 +715,6 @@ restaurantRoute.post("/likeupdate", getFields.none(), async (request, response) 
       );
 
       if(resLikeArr){ //update
-        console.log("update");
         let date = new Date().toISOString();
         let updateComments=await RestaurantLikes.updateOne(
           {
@@ -777,6 +812,55 @@ restaurantRoute.get("/likesearch", getFields.none(), async (request, response) =
 
     if(obj.code === ""){
       obj = commonModules.sendObjSet("2302");
+    }
+    response.status(500).send(obj);
+  }
+});
+
+restaurantRoute.get("/menusearch", getFields.none(), async (request, response) => {
+
+  try {
+    let sendObj = {};
+    
+    let restaurantDatas = await Restaurants.findOne(
+      {restaurantname:request.query.restaurantname,deleteyn:"n"},
+    );
+
+    if(restaurantDatas){
+      
+      let findCondition = {
+        $and: [
+          {restaurantseq:restaurantDatas.restaurantseq,},
+        ]
+      };
+
+      const categoryId = request.query.categoryid;
+      if(categoryId != null && categoryId != undefined && categoryId != ""){
+        findCondition.$and.push({
+          categoryid:request.query.categoryid
+        })
+      }
+
+      let menuList = await Menus.find(
+        findCondition
+      )
+
+      sendObj = commonModules.sendObjSet("2410", menuList);
+    }else{
+      sendObj = commonModules.sendObjSet("2411"); 
+    }
+    
+    
+    response.send({
+        sendObj
+    });
+
+  } catch (error) {
+    console.log(error);
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2412");
     }
     response.status(500).send(obj);
   }
