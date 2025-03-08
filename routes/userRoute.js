@@ -19,7 +19,10 @@ userRoute.post("/signup", getFields.none(), async (request, response) => {
     let sendObj = {};
     let userData = await Users.findOne({email:request.body.email});
     if(!userData){
+      const userseq = await sequence.getSequence("tacos_user_seq");
+      console.log(userseq);
       const userObj = {
+        userseq:userseq,
         email:request.body.email,
         password:request.body.password,
         reguser:request.body.email,
@@ -40,6 +43,7 @@ userRoute.post("/signup", getFields.none(), async (request, response) => {
     });
 
   } catch (error) {
+    console.log(error);;
       response.status(500).send(commonModules.sendObjSet("1002", error));
   }
 });
@@ -53,7 +57,6 @@ userRoute.post("/sendemail", getFields.none(), async (request, response) => {
     if(userData){
       sendObj = commonModules.sendObjSet("1011");
     }else{ //verify numbers send
-
       //time to send email check 
       let emailVerifyData = await EmailVerifications.aggregate(
         [{$match:{ "email":request.body.email}},
@@ -77,9 +80,9 @@ userRoute.post("/sendemail", getFields.none(), async (request, response) => {
             //startTransaction
             const session = await db.startSession();
             session.startTransaction();
-            const userseq = await sequence.getSequence("tacos_user_seq");
+            // const userseq = await sequence.getSequence("tacos_user_seq");
             const emailVObj = {
-              userseq:userseq,
+              // userseq:userseq,
               email:sendEmailAdrr,
               verifynumber:verifyNum,
               reguser:sendEmailAdrr,
@@ -102,6 +105,41 @@ userRoute.post("/sendemail", getFields.none(), async (request, response) => {
             throw new Error(sendObj.code);
           }
         }
+      }else{
+        const sendEmailAdrr = request.body.email;
+        const verifyNum = commonModules.getRandomNumber(6);
+        const emailSendYn = await sendEmail(sendEmailAdrr, verifyNum);
+        if(emailSendYn){
+          //startTransaction
+          const session = await db.startSession();
+          session.startTransaction();
+          // const userseq = await sequence.getSequence("tacos_user_seq");
+          const emailVObj = {
+            // userseq:userseq,
+            email:sendEmailAdrr,
+            verifynumber:verifyNum,
+            reguser:sendEmailAdrr,
+            upduser:sendEmailAdrr,
+          }
+          await EmailVerifications.deleteMany({
+            email:sendEmailAdrr
+          });
+          const newEmailVerifications = new EmailVerifications(emailVObj);
+          await newEmailVerifications.save();
+
+          // 4. commit
+          await session.commitTransaction();
+          // 5. end Transaction
+          session.endSession();
+
+          sendObj = commonModules.sendObjSet("1010");
+        }else{
+          sendObj = commonModules.sendObjSet("1012");
+          throw new Error(sendObj.code);
+        }
+
+
+
       }
     }
 
