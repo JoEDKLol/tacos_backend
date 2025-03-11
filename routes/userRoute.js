@@ -20,7 +20,7 @@ userRoute.post("/signup", getFields.none(), async (request, response) => {
     let userData = await Users.findOne({email:request.body.email});
     if(!userData){
       const userseq = await sequence.getSequence("tacos_user_seq");
-      console.log(userseq);
+
       const userObj = {
         userseq:userseq,
         email:request.body.email,

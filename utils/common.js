@@ -681,6 +681,39 @@ function returnCodeContents(code){
         arr.push("Internal Server Error"); 
         arr.push("n"); 
     }
+
+    if(code==="2440"){
+        arr.push("Image save success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2441"){
+        arr.push("Image save failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2442"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2450"){
+        arr.push("Image delete success"); 
+        arr.push("y"); 
+    }
+
+    if(code==="2451"){
+        arr.push("Image delete failed"); 
+        arr.push("n"); 
+    }
+
+    if(code==="2452"){
+        arr.push("Internal Server Error"); 
+        arr.push("n"); 
+    }
+
+
+    
     
     
 

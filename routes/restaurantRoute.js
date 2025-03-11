@@ -17,6 +17,9 @@ const { uploadMiddleware } = require('../utils/imgUpload');
 const imgbbUploader = require('imgbb-uploader');
 const fs = require('fs');
 const RestaurantLikes = require('../models/restaurantLikeSchemas');
+const s3Uploader = require('../utils/s3Upload');
+const s3Delete = require('../utils/s3Delete');
+const Users = require("../models/userSchemas");
 
 restaurantRoute.get("/searchreslist", getFields.none(), async (request, response) => {
   try {
@@ -865,6 +868,112 @@ restaurantRoute.get("/menusearch", getFields.none(), async (request, response) =
     response.status(500).send(obj);
   }
 });
+
+restaurantRoute.post('/fileUploadS3',  async (request, response) => {
+  try {
+      let sendObj = {};
+      
+      let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken);
+      if(!chechAuthRes) throw new Error();
+
+      if(!chechAuthRes){
+        sendObj = commonModules.sendObjSet("2011");
+      }else{
+
+        const uploadMiddlewareS3 = s3Uploader.single('file');
+
+
+        uploadMiddlewareS3(request, response, async function (err) {
+          
+          const retObj = {
+            errMassage : ""
+          }
+          if (err instanceof multer.MulterError) {  
+              retObj.errMassage = err.message;
+              sendObj = commonModules.sendObjSet("2441");
+
+          } else if (err) {      // An unknown error occurred when uploading. 
+              retObj.errMassage = err.message;
+              sendObj = commonModules.sendObjSet("2441");
+          }    // Everything went fine. 
+          else {
+            const obj = {
+              img_url : request.file ? request.file.location : null,
+              thumbImg_url : request.file ? request.file.location : null,
+            }
+            sendObj = commonModules.sendObjSet("2440", obj);
+          }
+
+          response.send({
+            sendObj
+          }); 
+
+        })
+      }
+
+
+  } catch (error) {
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2442");
+    }
+    response.status(500).send(obj);
+  }
+});
+
+
+restaurantRoute.post("/fileDeleteS3", getFields.none(), async (request, response) => {
+  try {
+      let sendObj = {};
+      
+      let chechAuthRes = checkAuth.checkAuth(request.headers.accesstoken);
+      
+      if(!chechAuthRes){
+        sendObj = commonModules.sendObjSet("2011");
+      }else{
+        const imgDeleteRes = await s3Delete(request.body.file_key);
+        
+        if(imgDeleteRes){
+          let date = new Date().toISOString();
+
+          let updateUsers=await Users.updateOne(
+            {
+              userseq:request.body.userseq, 
+            },
+            {
+              "userimg":"",
+              "userthumbImg":"",
+              "upduser":request.body.email,
+              "upddate":date,
+            }
+          );
+          sendObj = commonModules.sendObjSet("2450");
+        }else{
+          sendObj = commonModules.sendObjSet("2451");  
+        }
+
+        
+
+        response.send({
+          sendObj
+        }); 
+
+      }
+
+
+  } catch (error) {
+    console.log(error);
+    let obj = commonModules.sendObjSet(error.message); //code
+
+    if(obj.code === ""){
+      obj = commonModules.sendObjSet("2452");
+    }
+    response.status(500).send(obj);
+  }
+});
+
+
 
 
 module.exports=restaurantRoute
