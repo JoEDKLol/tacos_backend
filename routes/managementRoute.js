@@ -528,11 +528,13 @@ managementRoute.post("/menusave", getFields.none(), async (request, response) =>
         {userseq:request.body.userseq,restaurantname:request.body.restaurantname,deleteyn:"n"},
       );
 
+      const categoryId = request.body.categoryid?new ObjectId(request.body.categoryid):null
+
       if(restaurantDatas){
         const menuSaveObj = {
           userseq:request.body.userseq,
           restaurantseq:restaurantDatas.restaurantseq,
-          categoryid:new ObjectId(request.body.categoryid),
+          categoryid:categoryId,
           img:request.body.img,
           thumbImg:request.body.thumbImg,
           name:request.body.name,
