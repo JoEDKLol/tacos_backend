@@ -54,7 +54,6 @@ managementRoute.post("/heardersave", getFields.none(), async (request, response)
     });
 
   } catch (error) {
-    console.log(error);
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -91,7 +90,6 @@ managementRoute.get("/hearderlayoutsearch", getFields.none(), async (request, re
     });
 
   } catch (error) {
-    console.log(error);
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -139,7 +137,6 @@ managementRoute.post("/homesave", getFields.none(), async (request, response) =>
     });
 
   } catch (error) {
-    console.log(error);
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -176,7 +173,6 @@ managementRoute.get("/homelayoutsearch", getFields.none(), async (request, respo
     });
 
   } catch (error) {
-    console.log(error);
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -224,7 +220,6 @@ managementRoute.post("/aboutsave", getFields.none(), async (request, response) =
     });
 
   } catch (error) {
-    console.log(error);
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -261,7 +256,6 @@ managementRoute.get("/aboutlayoutsearch", getFields.none(), async (request, resp
     });
 
   } catch (error) {
-    console.log(error);
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -298,7 +292,7 @@ managementRoute.get("/menulayoutsearch", getFields.none(), async (request, respo
     });
 
   } catch (error) {
-    console.log(error);
+    
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -431,7 +425,7 @@ managementRoute.get("/categorysearch", getFields.none(), async (request, respons
     });
 
   } catch (error) {
-    console.log(error);
+    
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -611,7 +605,7 @@ managementRoute.get("/menusearch", getFields.none(), async (request, response) =
     });
 
   } catch (error) {
-    console.log(error);
+    
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -656,7 +650,7 @@ managementRoute.post("/menuupdate", getFields.none(), async (request, response) 
     });
 
   } catch (error) {
-    console.log(error);
+    
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){

@@ -55,7 +55,7 @@ restaurantRoute.get("/searchreslist", getFields.none(), async (request, response
         for(let j=0; j<HashtagsDatas.length; j++){
           hashTagArrRes.push(HashtagsDatas[j].tagname);
         }
-        // console.log(restaurantDatas[i]);
+        
         let obj ={
           userseq:restaurantDatas[i].userseq,
           restaurantseq:restaurantDatas[i].restaurantseq,
@@ -156,7 +156,7 @@ restaurantRoute.post("/restaurantnewsave", getFields.none(), async (request, res
     });
 
   } catch (error) {
-    console.log(error);
+    
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -235,7 +235,7 @@ restaurantRoute.post("/fileUpload", async (request, response) => {
               errMassage : ""
           }
           if (err instanceof multer.MulterError) {  
-              // console.log(err.message);
+              
               retObj.errMassage = err.message;
               sendObj = commonModules.sendObjSet("2131");
 
@@ -350,7 +350,7 @@ restaurantRoute.get("/searchhashtags", getFields.none(), async (request, respons
     });
 
   } catch (error) {
-    console.log(error);
+    
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -484,7 +484,7 @@ restaurantRoute.get("/categorysearch", getFields.none(), async (request, respons
     });
 
   } catch (error) {
-    console.log(error);
+    
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -553,7 +553,7 @@ restaurantRoute.post("/commentsave", getFields.none(), async (request, response)
 
   } catch (error) {
 
-    console.log(error);
+    
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -689,7 +689,7 @@ restaurantRoute.post("/commentdelete", getFields.none(), async (request, respons
     });
 
   } catch (error) {
-    console.log(error);
+    
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -778,7 +778,7 @@ restaurantRoute.post("/likeupdate", getFields.none(), async (request, response) 
     });
 
   } catch (error) {
-    console.log(error);
+    
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -859,7 +859,7 @@ restaurantRoute.get("/menusearch", getFields.none(), async (request, response) =
     });
 
   } catch (error) {
-    console.log(error);
+    
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
@@ -963,7 +963,7 @@ restaurantRoute.post("/fileDeleteS3", getFields.none(), async (request, response
 
 
   } catch (error) {
-    console.log(error);
+    
     let obj = commonModules.sendObjSet(error.message); //code
 
     if(obj.code === ""){
