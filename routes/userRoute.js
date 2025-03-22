@@ -347,7 +347,7 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
       let sendObj = {};
       
       let userData = await Users.findOne({email:request.body.email});
-      const resLikeArr = RestaurantLikes.find({userseq:userData.userseq});
+      const resLikeArr = await RestaurantLikes.find({userseq:userData.userseq});
 
       if(!userData){ //new user register
         let userEmail = request.body.email;
