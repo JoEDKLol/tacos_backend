@@ -284,7 +284,11 @@ userRoute.post("/signin", getFields.none(), async (request, response) => {
   try {
     let sendObj = {};
     let userData = await Users.findOne({email:request.body.email});
-    const resLikeArr = await RestaurantLikes.find({userseq:userData.userseq});
+    let resLikeArr = [];
+    if(userData){
+      resLikeArr = await RestaurantLikes.find({userseq:userData.userseq});
+    }
+    
 
     if(!userData){
         sendObj = commonModules.sendObjSet("1051");
@@ -341,15 +345,22 @@ userRoute.post("/signin", getFields.none(), async (request, response) => {
 });
 
 userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
-
+  
   try {
 
       let sendObj = {};
       
       let userData = await Users.findOne({email:request.body.email});
-      const resLikeArr = await RestaurantLikes.find({userseq:userData.userseq});
+      let resLikeArr = [];
+      if(userData){
+        resLikeArr = await RestaurantLikes.find({userseq:userData.userseq});
+      }
+      
 
       if(!userData){ //new user register
+
+        
+
         let userEmail = request.body.email;
 
         const session = await db.startSession();
@@ -377,7 +388,7 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
         const userObj = {
             id:resusers._id,
             email:resusers.email,
-            userseq:userData.userseq, 
+            userseq:userseq, 
             likesArr : resLikeArr
         }
         response.setHeader("refreshtoken", refreshtoken);
@@ -401,7 +412,7 @@ userRoute.post("/googlesignin", getFields.none(), async (request, response) => {
 
 
   }catch (error) {
-      response.status(500).send(commonModules.sendObjSet("1051", error));
+    response.status(500).send(commonModules.sendObjSet("1051", error));
   }
 
 });
@@ -413,7 +424,11 @@ userRoute.get("/getAccessToken", getFields.none(), async (request, response) => 
           const refreshtoken = jwtModules.checkRefreshToken(request.cookies.refreshtoken);
           if(refreshtoken){
               let userData = await Users.findOne({email:refreshtoken.email});
-              const resLikeArr = await RestaurantLikes.find({userseq:userData.userseq});
+              let resLikeArr = [];
+              if(userData){
+                resLikeArr = await RestaurantLikes.find({userseq:userData.userseq});
+              }
+              
               if(userData){
                   const userObj = {
                     id:userData._id, 
@@ -447,7 +462,11 @@ userRoute.post("/checkaccessToken", getFields.none(), async (request, response) 
           
           if(accessToken){
               let userData = await Users.findOne({email:accessToken.email});
-              const resLikeArr = await RestaurantLikes.find({userseq:userData.userseq});
+              let resLikeArr = [];
+              if(userData){
+                resLikeArr = await RestaurantLikes.find({userseq:userData.userseq});
+              }
+
               if(userData){
                   const userObj = {
                     id:userData._id, 
